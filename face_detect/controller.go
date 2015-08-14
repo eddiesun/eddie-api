@@ -23,27 +23,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	// read json from request body
 	var image struct {
-		image []byte
+		Base64DecodedImage []byte `json:"image"`
 	}
+
 	var decoder = json.NewDecoder(r.Body)
-	var err = decoder.Decode(&image)
-	if err != nil {
+	if err := decoder.Decode(&image); err != nil {
 		respErr(w, http.StatusBadRequest, "Invalid request body received.")
 		c.Infof("Bad Request - Error: %v\n", err)
 		return
 	}
 
-	// base 64 decode the image
-
 	// send to Detect function
-
-	Detect(image.image)
+	fmt.Fprintf(w, "%v", Detect(c, image.Base64DecodedImage))
 
 	// json encode the results
 
 	// send back to response
 
-	fmt.Fprint(w, "Face Detection API")
+	// fmt.Fprint(w, "Face Detection API")
 }
 
 func respErr(w http.ResponseWriter, status int, message string) {
